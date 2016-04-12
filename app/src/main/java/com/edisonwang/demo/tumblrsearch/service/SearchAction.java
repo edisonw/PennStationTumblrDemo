@@ -1,5 +1,6 @@
 package com.edisonwang.demo.tumblrsearch.service;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import com.edisonwang.demo.tumblrsearch.service.SearchAction_.PsSearchAction;
@@ -14,6 +15,7 @@ import com.edisonwang.ps.lib.Action;
 import com.edisonwang.ps.lib.ActionRequest;
 import com.edisonwang.ps.lib.ActionResult;
 import com.edisonwang.ps.lib.EventServiceImpl;
+import com.edisonwang.ps.lib.RequestEnv;
 
 import java.io.IOException;
 
@@ -23,7 +25,6 @@ import retrofit2.Response;
 /**
  * @author edi
  */
-@RequestAction
 @RequestActionHelper(variables = {
         @ClassField(name = "tag", kind = @Kind(clazz = String.class), required = true)
 })
@@ -35,13 +36,13 @@ import retrofit2.Response;
                 @ParcelableClassField(name = "message", kind = @Kind(clazz = String.class))
         })
 })
+@RequestAction
 public class SearchAction implements Action {
 
     @Override
-    public ActionResult processRequest(EventServiceImpl service, ActionRequest actionRequest, Bundle bundle) {
-        SearchActionHelper helper = PsSearchAction.helper(actionRequest.getArguments(getClass().getClassLoader()));
+    public ActionResult processRequest(Context context, ActionRequest request, RequestEnv env) {
         Tumblr tumblr = TumblrUtil.getTumblrService();
-        Call<Tumblr.TagSearchResult> result = tumblr.tagged(helper.tag(), TumblrUtil.apiKey());
+        Call<Tumblr.TagSearchResult> result = tumblr.tagged(getTag(request), TumblrUtil.apiKey());
         try {
             Response<Tumblr.TagSearchResult> resp = result.execute();
             Tumblr.TagSearchResult obj = resp.body();
@@ -53,5 +54,9 @@ public class SearchAction implements Action {
         } catch (IOException e) {
             return new SearchActionEventFailure(e.getMessage());
         }
+    }
+
+    private String getTag(ActionRequest request) {
+        return PsSearchAction.helper(request.getArguments(this)).tag();
     }
 }
