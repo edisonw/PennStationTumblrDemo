@@ -8,40 +8,40 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.EditText;
 
-import com.edisonwang.demo.tumblrsearch.service.SearchAction;
-import com.edisonwang.demo.tumblrsearch.service.SearchActionEventFailure;
-import com.edisonwang.demo.tumblrsearch.service.SearchActionEventSuccess;
-import com.edisonwang.demo.tumblrsearch.service.SearchAction_.PsSearchAction;
+import com.edisonwang.demo.tumblrsearch.service.SearchByTag;
+import com.edisonwang.demo.tumblrsearch.service.SearchByTagEventFailure;
+import com.edisonwang.demo.tumblrsearch.service.SearchByTagEventSuccess;
+import com.edisonwang.demo.tumblrsearch.service.SearchByTag_.PsSearchByTag;
 import com.edisonwang.demo.tumblrsearch.utils.DelayedWatcher;
 import com.edisonwang.ps.annotations.EventListener;
 import com.edisonwang.ps.lib.EventService;
 import com.edisonwang.ps.lib.PennStation;
 
 @EventListener(producers = {
-        SearchAction.class
+        SearchByTag.class
 })
 public class MainActivity extends AppCompatActivity {
 
     private final MainActivityEventListener mListener = new MainActivityEventListener() {
 
         @Override
-        public void onEventMainThread(SearchActionEventFailure event) {
-            Log.i("EventResult", "Failure: " + event.message);
+        public void onEventMainThread(SearchByTagEventFailure event) {
+            Log.i("EventResult", "Failed.");
         }
 
         @Override
-        public void onEventMainThread(SearchActionEventSuccess event) {
+        public void onEventMainThread(SearchByTagEventSuccess event) {
             if (event.getResponseInfo().mRequestId.equals(mRequestId)) {
                 mPostAdapter.replaceWith(event.results);
             }
         }
     };
 
-    private final DelayedWatcher.OnTextChanged mSearcher = new DelayedWatcher.OnTextChanged() {
+    private final DelayedWatcher.OnTextChanged mSearchByTager = new DelayedWatcher.OnTextChanged() {
         @Override
         public void onTextChanged(String text) {
             if (text.length() > 0) {
-                mRequestId = PennStation.requestAction(PsSearchAction.helper(text));
+                mRequestId = PennStation.requestAction(PsSearchByTag.helper(text));
             }
         }
     };
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         PennStation.init(getApplication(),
                 new PennStation.PennStationOptions(EventService.class));
         setContentView(R.layout.activity_main);
-        DelayedWatcher.addTo((EditText) findViewById(R.id.editText), mSearcher, 100);
+        DelayedWatcher.addTo((EditText) findViewById(R.id.editText), mSearchByTager, 100);
         mPostAdapter = new SearchAdapter(getLayoutInflater());
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.taggedPosts);
         assert recyclerView != null;

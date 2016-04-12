@@ -4,7 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.edisonwang.demo.tumblrsearch.service.Tumblr;
+import com.edisonwang.demo.tumblrsearch.service.Post;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +14,7 @@ import java.util.Arrays;
  */
 public class SearchAdapter extends RecyclerView.Adapter<TumblrPost> {
 
-    private final ArrayList<Tumblr.Post> mPosts = new ArrayList<>();
+    private final ArrayList<Post> mPosts = new ArrayList<>();
     private final LayoutInflater mInflater;
 
     public SearchAdapter(LayoutInflater inflater) {
@@ -36,7 +36,7 @@ public class SearchAdapter extends RecyclerView.Adapter<TumblrPost> {
         return mPosts.size();
     }
 
-    public void replaceWith(Tumblr.Post[] results) {
+    public void replaceWith(Post[] results) {
         mPosts.clear();
         mPosts.addAll(Arrays.asList(results));
         notifyDataSetChanged();
