@@ -9,9 +9,9 @@ import android.util.Log;
 import android.widget.EditText;
 
 import com.edisonwang.demo.tumblrsearch.service.SearchByTag;
-import com.edisonwang.demo.tumblrsearch.service.SearchByTagEventFailure;
-import com.edisonwang.demo.tumblrsearch.service.SearchByTagEventSuccess;
 import com.edisonwang.demo.tumblrsearch.service.SearchByTag_.PsSearchByTag;
+import com.edisonwang.demo.tumblrsearch.service.events.SearchByTagFailure;
+import com.edisonwang.demo.tumblrsearch.service.events.SearchByTagSuccess;
 import com.edisonwang.demo.tumblrsearch.utils.DelayedWatcher;
 import com.edisonwang.ps.annotations.EventListener;
 import com.edisonwang.ps.lib.EventService;
@@ -25,12 +25,12 @@ public class MainActivity extends AppCompatActivity {
     private final MainActivityEventListener mListener = new MainActivityEventListener() {
 
         @Override
-        public void onEventMainThread(SearchByTagEventFailure event) {
+        public void onEventMainThread(SearchByTagFailure event) {
             Log.i("EventResult", "Failed.");
         }
 
         @Override
-        public void onEventMainThread(SearchByTagEventSuccess event) {
+        public void onEventMainThread(SearchByTagSuccess event) {
             if (event.getResponseInfo().mRequestId.equals(mRequestId)) {
                 mPostAdapter.replaceWith(event.results);
             }

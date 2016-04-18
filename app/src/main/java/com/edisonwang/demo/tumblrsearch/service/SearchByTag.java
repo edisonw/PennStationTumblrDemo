@@ -3,16 +3,18 @@ package com.edisonwang.demo.tumblrsearch.service;
 import android.content.Context;
 
 import com.edisonwang.demo.tumblrsearch.service.SearchByTag_.PsSearchByTag;
-import com.edisonwang.ps.annotations.ClassField;
-import com.edisonwang.ps.annotations.EventClass;
+import com.edisonwang.demo.tumblrsearch.service.events.SearchByTagFailure;
+import com.edisonwang.demo.tumblrsearch.service.events.SearchByTagSuccess;
+import com.edisonwang.ps.annotations.Action;
+import com.edisonwang.ps.annotations.ActionHelper;
+import com.edisonwang.ps.annotations.Event;
 import com.edisonwang.ps.annotations.EventProducer;
+import com.edisonwang.ps.annotations.Field;
 import com.edisonwang.ps.annotations.Kind;
-import com.edisonwang.ps.annotations.ParcelableClassField;
-import com.edisonwang.ps.annotations.RequestAction;
-import com.edisonwang.ps.annotations.RequestActionHelper;
-import com.edisonwang.ps.lib.Action;
+import com.edisonwang.ps.annotations.ParcelableField;
 import com.edisonwang.ps.lib.ActionRequest;
 import com.edisonwang.ps.lib.ActionResult;
+import com.edisonwang.ps.lib.FullAction;
 import com.edisonwang.ps.lib.RequestEnv;
 
 import java.io.IOException;
@@ -22,30 +24,25 @@ import retrofit2.Call;
 /**
  * @author edi
  */
-@RequestActionHelper(variables = {
-        @ClassField(name = "tag", kind = @Kind(clazz = String.class), required = true)
+@ActionHelper(args = {
+        @Field(name = "tag", kind = @Kind(clazz = String.class), required = true)
 })
 @EventProducer(generated = {
-        @EventClass(classPostFix = "Success", fields = {
-                @ParcelableClassField(name = "results", kind = @Kind(clazz = Post[].class))
+        @Event(postFix = "Success", fields = {
+                @ParcelableField(name = "results", kind = @Kind(clazz = Post[].class))
         }),
-        @EventClass(classPostFix = "Failure")
+        @Event(postFix = "Failure")
 })
-@RequestAction
-public class SearchByTag implements Action {
-
+@Action
+public class SearchByTag extends FullAction {
     @Override
-    public ActionResult processRequest(Context context, ActionRequest request, RequestEnv env) {
-        final TagSearchResult obj = searchByTag(getTag(request));
+    protected ActionResult process(Context context, ActionRequest actionRequest, RequestEnv requestEnv) throws Throwable {
+        final TagSearchResult obj = searchByTag(getTag(actionRequest));
         if (obj != null) {
-            return new SearchByTagEventSuccess(obj.response);
+            return new SearchByTagSuccess(obj.response);
         } else {
-            return new SearchByTagEventFailure();
+            return new SearchByTagFailure();
         }
-    }
-
-    private String getTag(ActionRequest request) {
-        return PsSearchByTag.helper(request.getArguments(this)).tag();
     }
 
     public static TagSearchResult searchByTag(final String tag) {
@@ -57,4 +54,12 @@ public class SearchByTag implements Action {
         }
     }
 
+    private String getTag(ActionRequest request) {
+        return PsSearchByTag.helper(request.getArguments(this)).tag();
+    }
+
+    @Override
+    protected ActionResult onError(Context context, ActionRequest actionRequest, RequestEnv requestEnv, Throwable throwable) {
+        return new SearchByTagFailure();
+    }
 }
