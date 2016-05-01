@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.edisonwang.demo.tumblrsearch.service.SearchByTag;
 import com.edisonwang.demo.tumblrsearch.service.SearchByTag_.PsSearchByTag;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
     private SearchAdapter mPostAdapter;
     private Subscription mSub;
+    private Toast mToaster;
 
     @BindView(R.id.editText) EditText mSearchBox;
     @BindView(R.id.taggedPosts) RecyclerView mRecyclerView;
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         mPostAdapter = new SearchAdapter(getLayoutInflater());
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(mPostAdapter);
+        mToaster = Toast.makeText(this, "", Toast.LENGTH_SHORT);
     }
 
     /**
@@ -96,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onEventMainThread(SearchByTagFailure event) {
             Log.i("EventResult", "Failed.");
+            mToaster.setText(event.message);
+            mToaster.show();
         }
 
         @Override
