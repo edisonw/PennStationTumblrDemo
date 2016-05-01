@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".TumblrApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -12,8 +13,8 @@
         android:theme="@style/AppTheme">
 
         <service
-            android:exported="false"
-            android:name="com.edisonwang.ps.lib.EventService" />
+            android:name="com.edisonwang.ps.lib.EventService"
+            android:exported="false" />
 
         <activity android:name=".MainActivity">
             <intent-filter>
